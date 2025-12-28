@@ -83,12 +83,10 @@ function playVideo(video, updateHistory = true) {
     currentVideo = video;
     
     if (updateHistory) {
-        // If coming from search results, add to history and set index
         if (history.length === 0 || history[history.length - 1].videoId !== video.videoId) {
             history.push(video);
             historyIndex = history.length - 1;
         } else {
-            // Already the last video, just set index
             historyIndex = history.length - 1;
         }
     } 
@@ -96,6 +94,8 @@ function playVideo(video, updateHistory = true) {
     player.loadVideoById(video.videoId);
     player.playVideo(); 
 
+    // Update UI immediately
+    playPauseBtn.textContent = "⏸"; 
     player.setVolume(volumeSlider.value);
     currentTitle.textContent = video.title;
     thumbnail.src = `https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`; 
@@ -103,7 +103,6 @@ function playVideo(video, updateHistory = true) {
     renderHistory();
     updateSeekbar();
 }
-
 // ---------------------------
 // History (No Change)
 // ---------------------------
@@ -275,8 +274,10 @@ if (history.length > 0) {
 }
 
 window.addEventListener('beforeunload', (event) => {
-  // Cancel the event as stated by the standard.
-  event.preventDefault();
-  // Chrome requires returnValue to be set.
-  event.returnValue = '';
-});
+    // Only show the prompt if a video has been played or is in history
+    if (history.length > 0 || (player && player.getPlayerState() === YT.PlayerState.PLAYING)) {
+        // Standard procedure to trigger the browser's "Leave site?" dialog
+        event.preventDefault();
+        event.returnValue = ''; 
+    }
+})
