@@ -273,3 +273,10 @@ if (history.length > 0) {
     playVideo(history[historyIndex], false);
     player.pauseVideo(); 
 }
+
+window.addEventListener('beforeunload', (event) => {
+  // Cancel the event as stated by the standard.
+  event.preventDefault();
+  // Chrome requires returnValue to be set.
+  event.returnValue = '';
+});
